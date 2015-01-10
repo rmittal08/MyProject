@@ -1,14 +1,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context.xsd">
- 
+
 	<context:component-scan base-package="com.test.site.controller" />
- 	<context:component-scan base-package="com.test.site.bo" />
+	<context:component-scan base-package="com.test.site.bo" />
+	<context:component-scan base-package="com.test.site.dao.impl" />
+	<context:annotation-config/>
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix">
@@ -18,5 +23,35 @@
 			<value>.jsp</value>
 		</property>
 	</bean>
- 
+
+
+	<!-- ************ JPA configuration *********** -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="myDataSource" />
+		<property name="persistenceUnitName" value="jpaData"></property>
+		<property name="packagesToScan" value="com.test.site.model" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+				<property name="generateDdl" value="true"/>
+			</bean>
+		</property>
+	</bean>
+	<!-- ************ For JNDI *********** -->
+	<!-- <bean id="restDemoDS" class="org.springframework.jndi.JndiObjectFactoryBean" 
+		scope="singleton"> <property name="jndiName" value="java:comp/env/jdbc/restDemoDB" 
+		/> <property name="resourceRef" value="true" /> </bean> -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<bean id="myDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/myproject" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
 </beans>

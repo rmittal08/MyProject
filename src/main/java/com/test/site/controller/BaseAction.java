@@ -10,13 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.test.site.bo.JSONUtility;
+import com.test.site.dao.impl.UserDAOImpl;
 import com.test.site.model.HotelInfo;
+import com.test.site.model.User;
 
 @Controller
 public class BaseAction {
@@ -28,7 +31,11 @@ public class BaseAction {
 	@Autowired
 	private JSONUtility jsonUtility;
 	
+	@Autowired
+	private UserDAOImpl userDAOImpl;
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@Transactional
 	public String welcome(ModelMap model) {
 		try {
 			Set<Object> listOfCity = jsonUtility.getListOfValues("city");
@@ -43,7 +50,19 @@ public class BaseAction {
 		listOfClass.add(3);
 		listOfClass.add(4);
 		model.addAttribute("listOfClass", listOfClass);
- 
+		User user = new User();
+		user.setFirstName("Rahul");
+		user.setLastName("Mittal");
+		user.setMiddleName("  ");
+		user.setEmailId("rahulmittal@jiitu.org");
+		user.setPassword("1234");
+		user.setUsername("rahul");
+		user.setDateOfBirth("08/07/1988");
+		try{
+			System.out.println(userDAOImpl.saveUser(user));
+		}catch(Exception exp){
+			exp.printStackTrace();
+		}
 		// Spring uses InternalResourceViewResolver and return back index.jsp
 		return HOME;
  
@@ -81,6 +100,20 @@ public class BaseAction {
 	 */
 	public void setJsonUtility(JSONUtility jsonUtility) {
 		this.jsonUtility = jsonUtility;
+	}
+
+	/**
+	 * @return the userDAOImpl
+	 */
+	public UserDAOImpl getUserDAOImpl() {
+		return userDAOImpl;
+	}
+
+	/**
+	 * @param userDAOImpl the userDAOImpl to set
+	 */
+	public void setUserDAOImpl(UserDAOImpl userDAOImpl) {
+		this.userDAOImpl = userDAOImpl;
 	}
 	
 }
