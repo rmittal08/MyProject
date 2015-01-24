@@ -9,6 +9,7 @@
   <url>http://maven.apache.org</url>
 <modules>
 <module>myproject-core</module>
+<module>myproject-db</module>
 <module>myproject-web</module>
 </modules>
 <properties>
